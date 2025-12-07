@@ -2,16 +2,26 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION    = "ap-south-1"
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')   // IAM user access key
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')   // IAM user secret key
-        TF_WORKDIR            = "jenkins-terraform/envs/dev"            // Change for stage/prod
+        AWS_DEFAULT_REGION = "ap-south-1"
+        TF_WORKDIR         = "jenkins-terraform/envs/dev"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pathasaradi/Jenkins-terraform.git'
+            }
+        }
+
+        stage('Load AWS Credentials') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-access-key'
+                ]]) {
+                    sh 'echo AWS credentials loaded'
+                }
             }
         }
 
@@ -54,12 +64,6 @@ pipeline {
                     sh 'terraform output'
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: '**/tfplan', allowEmptyArchive: true
         }
     }
 }
