@@ -72,6 +72,7 @@ pipeline {
                 dir("${env.TF_WORKDIR}") {
                     input message: 'Are you sure you want to destroy all AWS infrastructure?'
                     sh 'terraform destroy -auto-approve'
+                    sh 'terraform destroy -auto-approve -refresh=true'
                 }
             }
         }
