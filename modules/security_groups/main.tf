@@ -1,9 +1,7 @@
-variable "vpc_id"   { type = string }
-variable "app_port" { type = number }
-
 resource "aws_security_group" "alb" {
-  name   = "alb-sg"
-  vpc_id = var.vpc_id
+  name        = "alb-sg"
+  description = "Security group for ALB"
+  vpc_id      = var.vpc_id
 
   ingress {
     description = "Allow HTTP from world"
@@ -20,15 +18,18 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "alb-sg" }
+  tags = {
+    Name = "alb-sg"
+  }
 }
 
 resource "aws_security_group" "ec2" {
-  name   = "ec2-app-sg"
-  vpc_id = var.vpc_id
+  name        = "ec2-app-sg"
+  description = "Security group for EC2 instances"
+  vpc_id      = var.vpc_id
 
   ingress {
-    description     = "App traffic from ALB"
+    description     = "Allow application traffic from ALB"
     from_port       = var.app_port
     to_port         = var.app_port
     protocol        = "tcp"
@@ -42,8 +43,7 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "ec2-app-sg" }
+  tags = {
+    Name = "ec2-app-sg"
+  }
 }
-
-output "alb_sg_id" { value = aws_security_group.alb.id }
-output "ec2_sg_id" { value = aws_security_group.ec2.id }
