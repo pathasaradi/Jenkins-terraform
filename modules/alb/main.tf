@@ -1,16 +1,13 @@
-variable "name"       { type = string }
-variable "vpc_id"     { type = string }
-variable "subnet_ids" { type = list(string) }
-variable "alb_sg_id"  { type = string }
-variable "app_port"   { type = number }
-
 resource "aws_lb" "this" {
   name               = var.name
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
   subnets            = var.subnet_ids
-  tags               = { Name = var.name }
+
+  tags = {
+    Name = var.name
+  }
 }
 
 resource "aws_lb_target_group" "this" {
@@ -30,7 +27,9 @@ resource "aws_lb_target_group" "this" {
     unhealthy_threshold = 2
   }
 
-  tags = { Name = "${var.name}-tg" }
+  tags = {
+    Name = "${var.name}-tg"
+  }
 }
 
 resource "aws_lb_listener" "http" {
@@ -43,6 +42,3 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.this.arn
   }
 }
-
-output "alb_dns_name"     { value = aws_lb.this.dns_name }
-output "target_group_arn" { value = aws_lb_target_group.this.arn }
