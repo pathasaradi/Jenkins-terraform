@@ -1,9 +1,9 @@
-pipeline {
+spipeline {
     agent any
 
     environment {
         AWS_DEFAULT_REGION = "ap-south-1"
-        TF_WORKDIR         = "envs/dev"
+        TF_WORKDIR         = "Jenkins-terraform/envs/dev"
     }
 
     stages {
