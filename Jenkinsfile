@@ -5,7 +5,7 @@ pipeline {
         AWS_DEFAULT_REGION    = "ap-south-1"
         AWS_ACCESS_KEY_ID     = credentials('aws-access-key')   // IAM user access key
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')   // IAM user secret key
-        TF_WORKDIR            = "jenkins_terraform/envs/dev"            // Change for stage/prod
+        TF_WORKDIR            = "jenkins-terraform/envs/dev"            // Change for stage/prod
     }
 
     stages {
