@@ -40,6 +40,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 dir("${env.TF_WORKDIR}") {
+                    sh 'terraform plan'
                     sh 'terraform plan -out=tfplan'
                 }
             }
