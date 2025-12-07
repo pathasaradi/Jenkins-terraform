@@ -1,10 +1,10 @@
-variable "name" {}
-variable "ami_id" {}
-variable "instance_type" {}
-variable "subnet_ids" {}
-variable "ec2_sg_id" {}
-variable "target_group_arn" {}
-variable "app_port" {}
-variable "min_size" {}
-variable "max_size" {}
-variable "desired_capacity" {}
+variable "name"             { type = string }
+variable "ami_id"           { type = string }
+variable "instance_type"    { type = string }
+variable "subnet_ids"       { type = list(string) }
+variable "ec2_sg_id"        { type = string }
+variable "target_group_arn" { type = string }
+variable "app_port"         { type = number }
+variable "min_size"         { type = number }
+variable "max_size"         { type = number }
+variable "desired_capacity" { type = number }
