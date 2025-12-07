@@ -1,2 +1,7 @@
-variable "vpc_id" {}
-variable "app_port" {}
+variable "vpc_id" {
+  type = string
+}
+
+variable "app_port" {
+  type = number
+}
