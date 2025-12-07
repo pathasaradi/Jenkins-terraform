@@ -27,9 +27,10 @@ pipeline {
 
         stage('Terraform Fmt & Validate') {
             steps {
-                dir("${env.TF_WORKDIR}") {
-                    sh 'terraform init'
-                }
+                sh '''
+                    cd ${TF_WORKDIR}
+                    terraform init
+                    '''
             }
         }
 
