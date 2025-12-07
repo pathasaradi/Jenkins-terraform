@@ -1,0 +1,76 @@
+variable "name"             { type = string }
+variable "ami_id"           { type = string }
+variable "instance_type"    { type = string }
+variable "subnet_ids"       { type = list(string) }
+variable "ec2_sg_id"        { type = string }
+variable "target_group_arn" { type = string }
+variable "app_port"         { type = number }
+variable "min_size"         { type = number }
+variable "max_size"         { type = number }
+variable "desired_capacity" { type = number }
+
+resource "aws_launch_template" "this" {
+  name_prefix               = "${var.name}-lt-"
+  image_id                  = var.ami_id
+  instance_type             = var.instance_type
+  vpc_security_group_ids    = [var.ec2_sg_id]
+
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    yum update -y
+    yum install -y httpd
+    echo "Hello from ${var.name}" > /var/www/html/index.html
+    systemctl enable httpd
+    systemctl start httpd
+  EOF
+  )
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = { Name = "${var.name}-app" }
+  }
+}
+
+resource "aws_autoscaling_group" "this" {
+  name                = "${var.name}-asg"
+  min_size            = var.min_size
+  max_size            = var.max_size
+  desired_capacity    = var.desired_capacity
+  vpc_zone_identifier = var.subnet_ids
+
+  launch_template {
+    id      = aws_launch_template.this.id
+    version = "$Latest"
+  }
+
+  target_group_arns         = [var.target_group_arn]
+  health_check_type         = "EC2"
+  health_check_grace_period = 300
+
+  tag {
+    key                 = "Name"
+    value               = "${var.name}-asg"
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Simple step scaling (optional placeholders)
+resource "aws_autoscaling_policy" "scale_out" {
+  name                   = "${var.name}-scale-out"
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = aws_autoscaling_group.this.name
+}
+
+resource "aws_autoscaling_policy" "scale_in" {
+  name                   = "${var.name}-scale-in"
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = aws_autoscaling_group.this.name
+}
+
+output "asg_name" { value = aws_autoscaling_group.this.name }
