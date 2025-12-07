@@ -1,5 +1,19 @@
-variable "name" {}
-variable "vpc_id" {}
-variable "subnet_ids" {}
-variable "alb_sg_id" {}
-variable "app_port" {}
+variable "name" {
+  type = string
+}
+
+variable "vpc_id" {
+  type = string
+}
+
+variable "subnet_ids" {
+  type = list(string)
+}
+
+variable "alb_sg_id" {
+  type = string
+}
+
+variable "app_port" {
+  type = number
+}
