@@ -29,6 +29,8 @@ pipeline {
             steps {
                 sh '''
                     cd ${TF_WORKDIR}
+                    ls
+                    pwd
                     terraform init
                     '''
             }
