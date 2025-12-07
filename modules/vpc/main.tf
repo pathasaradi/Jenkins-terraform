@@ -1,19 +1,19 @@
-variable "name"            { type = string }
-variable "vpc_cidr"        { type = string }
-variable "azs"             { type = list(string) }
-variable "public_subnets"  { type = list(string) }
-variable "private_subnets" { type = list(string) }
-
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = { Name = "${var.name}-vpc" }
+
+  tags = {
+    Name = "${var.name}-vpc"
+  }
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.this.id
-  tags   = { Name = "${var.name}-igw" }
+
+  tags = {
+    Name = "${var.name}-igw"
+  }
 }
 
 resource "aws_subnet" "public" {
@@ -22,7 +22,10 @@ resource "aws_subnet" "public" {
   cidr_block              = var.public_subnets[count.index]
   availability_zone       = var.azs[count.index]
   map_public_ip_on_launch = true
-  tags = { Name = "${var.name}-public-${count.index}" }
+
+  tags = {
+    Name = "${var.name}-public-${count.index}"
+  }
 }
 
 resource "aws_subnet" "private" {
@@ -30,24 +33,37 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.this.id
   cidr_block        = var.private_subnets[count.index]
   availability_zone = var.azs[count.index]
-  tags = { Name = "${var.name}-private-${count.index}" }
+
+  tags = {
+    Name = "${var.name}-private-${count.index}"
+  }
 }
 
 resource "aws_eip" "nat" {
   domain = "vpc"
-  tags   = { Name = "${var.name}-nat-eip" }
+
+  tags = {
+    Name = "${var.name}-nat-eip"
+  }
 }
 
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
-  tags          = { Name = "${var.name}-nat" }
-  depends_on    = [aws_internet_gateway.igw]
+
+  depends_on = [aws_internet_gateway.igw]
+
+  tags = {
+    Name = "${var.name}-nat"
+  }
 }
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
-  tags   = { Name = "${var.name}-public-rt" }
+
+  tags = {
+    Name = "${var.name}-public-rt"
+  }
 }
 
 resource "aws_route" "public_internet" {
@@ -64,7 +80,10 @@ resource "aws_route_table_association" "public_assoc" {
 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
-  tags   = { Name = "${var.name}-private-rt" }
+
+  tags = {
+    Name = "${var.name}-private-rt"
+  }
 }
 
 resource "aws_route" "private_nat" {
