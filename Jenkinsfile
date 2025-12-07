@@ -4,7 +4,6 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = "ap-south-1"
         TF_WORKDIR         = "jenkins-terraform/envs/dev"
-        PATH               = "${env.WORKSPACE}/bin:/usr/bin:/bin"
     }
 
     stages {
@@ -23,22 +22,6 @@ pipeline {
                 ]]) {
                     sh 'echo "AWS credentials loaded"'
                 }
-            }
-        }
-
-        stage('Install Terraform') {
-            steps {
-                sh '''
-                yum install -y unzip
-
-                curl -o terraform.zip https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
-                unzip -o terraform.zip
-
-                mkdir -p $WORKSPACE/bin
-                mv terraform $WORKSPACE/bin/
-
-                terraform -version
-                '''
             }
         }
 
