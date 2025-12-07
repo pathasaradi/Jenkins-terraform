@@ -20,18 +20,31 @@ pipeline {
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-access-key'
                 ]]) {
-                    sh 'echo AWS credentials loaded'
+                    sh 'echo "AWS credentials loaded"'
                 }
+            }
+        }
+
+        stage('Install Terraform') {
+            steps {
+                sh '''
+                sudo yum install -y unzip
+                curl -o terraform.zip https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
+                unzip -o terraform.zip
+                sudo mv terraform /usr/local/bin/
+                terraform -version
+                '''
             }
         }
 
         stage('Terraform Fmt & Validate') {
             steps {
-                sh "terraform -version"
                 dir("${env.TF_WORKDIR}") {
-                    sh 'terraform fmt -check'
-                    sh 'terraform init -input=false'
-                    sh 'terraform validate'
+                    sh '''
+                    terraform fmt -check
+                    terraform init -input=false
+                    terraform validate
+                    '''
                 }
             }
         }
