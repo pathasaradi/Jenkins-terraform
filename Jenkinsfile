@@ -28,7 +28,7 @@ pipeline {
         stage('Terraform Fmt & Validate') {
             steps {
                 sh '''
-                    cd Jenkins-terraform/envs/dev
+                    cd envs/dev
                     ls
                     pwd
                     terraform init
