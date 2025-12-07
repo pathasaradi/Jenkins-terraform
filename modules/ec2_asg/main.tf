@@ -6,11 +6,11 @@ resource "aws_launch_template" "this" {
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
-    yum update -y
-    yum install -y httpd
-    echo "Hello from ${var.name}" > /var/www/html/index.html
-    systemctl enable httpd
-    systemctl start httpd
+    apt update -y
+    apt install -y apache2
+    echo "Hello from demo-app-app" > /var/www/html/index.html
+    systemctl enable apache2
+    systemctl start apache2
   EOF
   )
 
