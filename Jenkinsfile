@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION = "ap-south-1"
-        TF_WORKDIR         = "jenkins-terraform/envs/dev"
+        TF_WORKDIR         = "envs/dev"
     }
 
     stages {
