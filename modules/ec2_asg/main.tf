@@ -1,19 +1,8 @@
-variable "name"             { type = string }
-variable "ami_id"           { type = string }
-variable "instance_type"    { type = string }
-variable "subnet_ids"       { type = list(string) }
-variable "ec2_sg_id"        { type = string }
-variable "target_group_arn" { type = string }
-variable "app_port"         { type = number }
-variable "min_size"         { type = number }
-variable "max_size"         { type = number }
-variable "desired_capacity" { type = number }
-
 resource "aws_launch_template" "this" {
-  name_prefix               = "${var.name}-lt-"
-  image_id                  = var.ami_id
-  instance_type             = var.instance_type
-  vpc_security_group_ids    = [var.ec2_sg_id]
+  name_prefix            = "${var.name}-lt-"
+  image_id               = var.ami_id
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [var.ec2_sg_id]
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
@@ -27,7 +16,9 @@ resource "aws_launch_template" "this" {
 
   tag_specifications {
     resource_type = "instance"
-    tags = { Name = "${var.name}-app" }
+    tags = {
+      Name = "${var.name}-app"
+    }
   }
 }
 
@@ -58,7 +49,6 @@ resource "aws_autoscaling_group" "this" {
   }
 }
 
-# Simple step scaling (optional placeholders)
 resource "aws_autoscaling_policy" "scale_out" {
   name                   = "${var.name}-scale-out"
   scaling_adjustment     = 1
@@ -72,5 +62,3 @@ resource "aws_autoscaling_policy" "scale_in" {
   adjustment_type        = "ChangeInCapacity"
   autoscaling_group_name = aws_autoscaling_group.this.name
 }
-
-output "asg_name" { value = aws_autoscaling_group.this.name }
